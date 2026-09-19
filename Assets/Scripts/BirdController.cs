@@ -29,6 +29,10 @@ public class BirdController : MonoBehaviour
     [Tooltip("Durasi kebal setelah spawn (detik)")]
     [SerializeField] private float invincibilityDuration = 1f;
 
+    [Header("=== Debug ===")]
+    [Tooltip("Aktifkan restart dengan tombol Space (untuk testing)")]
+    [SerializeField] private bool enableDebugRestart = true;
+
     // Simpan posisi spawn awal
     private Vector2 initialSpawnPosition;
 
@@ -47,7 +51,6 @@ public class BirdController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // Pastikan gravity scale 0, kita handle manual
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
     }
@@ -62,6 +65,13 @@ public class BirdController : MonoBehaviour
     void FixedUpdate()
     {
         if (isDead) return;
+        
+        if (isInvincible)
+        {
+            // Selama invincible, menghentikan semua gerakan
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
         ApplyGravity();
         ApplyThrust();
@@ -72,12 +82,22 @@ public class BirdController : MonoBehaviour
     void Update()
     {
         UpdateInvincibility();
+        HandleDebugRestart();
     }
+   
+    // Debug Restart
+    private void HandleDebugRestart()
+    {
+        if (!enableDebugRestart) return;
 
-    // ============================================
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetBird(initialSpawnPosition);
+            Debug.Log("[BirdController] Restarting bird...");
+        }
+    }
+    
     //  PHYSICS
-    // ============================================
-
     private void ApplyGravity()
     {
         Vector2 vel = rb.linearVelocity;
@@ -104,16 +124,6 @@ public class BirdController : MonoBehaviour
         rb.linearVelocity = vel;
     }
 
-    private void Restart()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("[BirdController] Restarting bird...");
-            ResetBird(initialSpawnPosition);
-        }
-
-    }
-
     private void ClampVelocity()
     {
         Vector2 vel = rb.linearVelocity;
@@ -121,15 +131,13 @@ public class BirdController : MonoBehaviour
         rb.linearVelocity = vel;
     }
 
-    // ============================================
+    
     //  BOUNDARIES
-    // ============================================
-
     private void HandleBoundaries()
     {
         Vector2 pos = transform.position;
 
-        // Batas atas: mentok, tidak mati
+        // Batas atas mentok
         if (pos.y > topBoundary)
         {
             pos.y = topBoundary;
@@ -142,18 +150,16 @@ public class BirdController : MonoBehaviour
             }
         }
 
-        // Batas bawah: MATI
+        // Batas bawah
         if (pos.y < bottomBoundary)
         {
             Die();
-            Restart();
         }
     }
 
-    // ============================================
+    
     //  INVINCIBILITY
-    // ============================================
-
+    
     private void StartInvincibility()
     {
         isInvincible = true;
@@ -180,10 +186,8 @@ public class BirdController : MonoBehaviour
         }
     }
 
-    // ============================================
-    //  DEATH & COLLISION
-    // ============================================
-
+    
+    //  DEATH dan COLLISION
     public void Die()
     {
         if (isDead) return;
@@ -211,10 +215,6 @@ public class BirdController : MonoBehaviour
             Die();
         }
     }
-
-    // ============================================
-    //  PUBLIC API (untuk GameManager / sistem lain)
-    // ============================================
 
     public void setBirdKinematic(bool isKinematic)
     {
