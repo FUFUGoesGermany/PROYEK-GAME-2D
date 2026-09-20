@@ -200,8 +200,9 @@ public class BirdController : MonoBehaviour
 
         Debug.Log("[BirdController] Bird died!");
 
-        // TODO: Trigger death animation
-        // TODO: Notify GameManager → show death screen
+        // next nya:
+        // - Trigger death animation
+        // - Notify GameManager lalu show death screen
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
