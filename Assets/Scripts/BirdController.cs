@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BirdController : MonoBehaviour
 {
-    [Header("=== Physics Parameters ===")]
+    [Header("Physics Parameters")]
     [Tooltip("Kekuatan gravitasi (negatif = tarik ke bawah)")]
     [SerializeField] private float gravity = -20f;
 
@@ -18,31 +18,31 @@ public class BirdController : MonoBehaviour
     [Tooltip("Batas kecepatan naik maksimum")]
     [SerializeField] private float maxRiseSpeed = 10f;
 
-    [Header("=== Boundaries ===")]
+    [Header("Boundaries")]
     [Tooltip("Batas atas layar (mentok, tidak mati)")]
     [SerializeField] private float topBoundary = 4.5f;
 
     [Tooltip("Batas bawah layar (mati)")]
     [SerializeField] private float bottomBoundary = -4.5f;
 
-    [Header("=== Invincibility ===")]
+    [Header("Invincibility")]
     [Tooltip("Durasi kebal setelah spawn (detik)")]
-    [SerializeField] private float invincibilityDuration = 1f;
+    [SerializeField] private float invincibilityDuration = 3f;
 
-    [Header("=== Debug ===")]
+    [Header("Debug")]
     [Tooltip("Aktifkan restart dengan tombol Space (untuk testing)")]
     [SerializeField] private bool enableDebugRestart = true;
 
     // Simpan posisi spawn awal
     private Vector2 initialSpawnPosition;
 
-    // --- Private ---
+    // Private 
     private Rigidbody2D rb;
     private float invincibilityTimer;
     private bool isInvincible;
     private bool isDead;
 
-    // === Properties untuk diakses sistem lain ===
+    //  Properties untuk diakses sistem lain 
     public bool IsDead => isDead;
     public bool IsInvincible => isInvincible;
     public float CurrentVelocityY => rb != null ? rb.linearVelocity.y : 0f;
@@ -160,7 +160,7 @@ public class BirdController : MonoBehaviour
     
     //  INVINCIBILITY
     
-    private void StartInvincibility()
+    public void StartInvincibility()
     {
         isInvincible = true;
         invincibilityTimer = invincibilityDuration;
@@ -217,7 +217,7 @@ public class BirdController : MonoBehaviour
         }
     }
 
-    public void setBirdKinematic(bool isKinematic)
+    public void SetBirdKinematic(bool isKinematic)
     {
         rb.bodyType = isKinematic ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
     }
@@ -231,7 +231,7 @@ public class BirdController : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         transform.position = spawnPosition;
 
-        setBirdKinematic(false);
+        SetBirdKinematic(false);
         rb.linearVelocity = Vector2.zero;
         transform.position = spawnPosition;
 
