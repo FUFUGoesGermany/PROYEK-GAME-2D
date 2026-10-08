@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 using TMPro;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Countdown")]
     [SerializeField] private int countdownSeconds = 3;
+
+    [Header("Game Over UI")]
+    [SerializeField] private GameObject gameOverPanel;
 
     public enum GameState
     {
@@ -59,14 +64,17 @@ public class GameManager : MonoBehaviour
             case GameState.Countdown:
                 SetWorldActive(false);
                 SetCountdownText(string.Empty);
+                SetGameOverPanel(false);
                 break;
             case GameState.Playing:
                 SetWorldActive(true);
                 SetCountdownText(string.Empty);
+                SetGameOverPanel(false);
                 break;
             case GameState.Dead:
                 SetWorldActive(false);
                 SetCountdownText("GAME OVER");
+                SetGameOverPanel(true);
                 break;
         }
     }
@@ -106,5 +114,23 @@ public class GameManager : MonoBehaviour
         {
             countdownText.text = text;
         }
+    }
+
+    private void SetGameOverPanel(bool isActive)
+    {
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(isActive);
+        }
+    }
+
+    public void RetryGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }

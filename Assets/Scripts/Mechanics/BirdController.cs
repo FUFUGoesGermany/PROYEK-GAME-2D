@@ -55,6 +55,7 @@ public class BirdController : MonoBehaviour
     private float invincibilityTimer;
     private bool isInvincible;
     private bool isDead;
+    public int CurrentHearts => currentHealth;
 
     //  Properties untuk diakses sistem lain 
     public bool IsDead => isDead;
