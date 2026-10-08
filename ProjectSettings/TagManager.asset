@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Star
   - FinishLine
+  - FallingObject
   layers:
   - Default
   - TransparentFX

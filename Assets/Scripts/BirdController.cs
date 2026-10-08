@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using TMPro;
 public class BirdController : MonoBehaviour
 {
     [Header("Physics Parameters")]
@@ -17,6 +17,12 @@ public class BirdController : MonoBehaviour
 
     [Tooltip("Batas kecepatan naik maksimum")]
     [SerializeField] private float maxRiseSpeed = 10f;
+    
+
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 3;
+    public int currentHealth;
+
 
     [Header("Boundaries")]
     [Tooltip("Batas atas layar (mentok, tidak mati)")]
@@ -25,13 +31,21 @@ public class BirdController : MonoBehaviour
     [Tooltip("Batas bawah layar (mati)")]
     [SerializeField] private float bottomBoundary = -4.5f;
 
+
     [Header("Invincibility")]
     [Tooltip("Durasi kebal setelah spawn (detik)")]
-    [SerializeField] private float invincibilityDuration = 3f;
+    [SerializeField] private float invincibilityDuration = 1.5f;
+
 
     [Header("Debug")]
     [Tooltip("Aktifkan restart dengan tombol Space (untuk testing)")]
     [SerializeField] private bool enableDebugRestart = true;
+
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI healthText;
+    [SerializeField] private GameObject[] heartIcons;
+    
+
 
     // Simpan posisi spawn awal
     private Vector2 initialSpawnPosition;
@@ -53,11 +67,21 @@ public class BirdController : MonoBehaviour
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
+        
+        rb.bodyType = RigidbodyType2D.Kinematic; // Mulai kinematic, nanti diubah saat game start
     }
 
     void Start()
     {
         initialSpawnPosition = transform.position;
+        currentHealth = maxHealth;
+        isDead = false;
+
+        // update UI health
+        if (healthText != null)
+        {
+            healthText.text = $"Hp: {currentHealth}";
+        }
 
         StartInvincibility();
     }
@@ -65,13 +89,11 @@ public class BirdController : MonoBehaviour
     void FixedUpdate()
     {
         if (isDead) return;
-        
-        if (isInvincible)
+        if (rb.bodyType == RigidbodyType2D.Kinematic)
         {
-            // Selama invincible, menghentikan semua gerakan
             rb.linearVelocity = Vector2.zero;
             return;
-        }
+        } 
 
         ApplyGravity();
         ApplyThrust();
@@ -211,9 +233,32 @@ public class BirdController : MonoBehaviour
 
         string tag = collision.gameObject.tag;
 
+        Debug.Log($"[Bird] Ditabrak oleh: {collision.gameObject.name} (tag: {tag})");
         if (tag == "Obstacle" || tag == "Enemy")
         {
+            TakeDamage();
+        }   
+    }
+
+    public void TakeDamage()
+    {
+        if (isInvincible || isDead) return;
+
+        currentHealth--;
+        if (healthText != null)
+        {
+            healthText.text = $"Hp: {currentHealth}";
+        }
+        Debug.Log($"[BirdController] Si Fufu kena damage: {currentHealth}/{maxHealth}");
+
+        if (currentHealth <= 0)
+        {
             Die();
+        }
+        else
+        {
+            // jika masih ada nyawa, mulai invincible lagi
+            StartInvincibility();
         }
     }
 
@@ -225,6 +270,7 @@ public class BirdController : MonoBehaviour
 
     public void ResetBird(Vector2 spawnPosition)
     {
+        currentHealth = maxHealth;
         isDead = false;
         isInvincible = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
@@ -237,6 +283,11 @@ public class BirdController : MonoBehaviour
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.enabled = true;
+    
+        if (healthText != null)
+        {
+            healthText.text = $"Hp: {currentHealth}";
+        }
 
         StartInvincibility();
     }

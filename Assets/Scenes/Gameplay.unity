@@ -875,10 +875,12 @@ MonoBehaviour:
   thrustDown: 25
   maxFallSpeed: -10
   maxRiseSpeed: 10
+  maxHealth: 3
   topBoundary: 4.5
   bottomBoundary: -4.5
   invincibilityDuration: 3
   enableDebugRestart: 1
+  healthText: {fileID: 0}
 --- !u!61 &951857221
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1126,6 +1128,58 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &2021780072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2021780074}
+  - component: {fileID: 2021780073}
+  m_Layer: 0
+  m_Name: FallingSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2021780073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021780072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3ebf664b35a3640a4bdc4d71573b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallingSpawner
+  fallingObjectPrefab: {fileID: 3586971228798067921, guid: 6cddc5aeef742fb4ba254d4ad87b92ec, type: 3}
+  minSpawnInterval: 1.5
+  maxSpawnInterval: 3
+  spawnXMin: 5
+  spawnXMax: 10
+  spawnY: 6
+  gameManager: {fileID: 1087892796}
+  worldParent: {fileID: 1223897967}
+--- !u!4 &2021780074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021780072}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2042571625
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,3 +1563,4 @@ SceneRoots:
   - {fileID: 1087892795}
   - {fileID: 1908870596}
   - {fileID: 2089501286}
+  - {fileID: 2021780074}

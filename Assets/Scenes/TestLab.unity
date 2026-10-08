@@ -267,7 +267,6 @@ GameObject:
   - component: {fileID: 253510807}
   - component: {fileID: 253510806}
   - component: {fileID: 253510805}
-  - component: {fileID: 253510804}
   - component: {fileID: 253510803}
   m_Layer: 0
   m_Name: Enemy
@@ -322,19 +321,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &253510804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 253510802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a769c82ea04e49444ac73ec036128fd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObstacleCleanup
-  destroyXPosition: -12
 --- !u!114 &253510805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,12 +333,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98501d896d17af64bb3a97ed3c429176, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  bird: {fileID: 0}
-  Straightpattern: 0
-  SineWavepattern: 1
+  bird: {fileID: 951857220}
   speed: 2
-  amplitude: 2
-  frequency: 3
 --- !u!212 &253510806
 SpriteRenderer:
   serializedVersion: 2

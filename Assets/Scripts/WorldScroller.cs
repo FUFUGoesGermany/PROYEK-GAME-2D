@@ -1,15 +1,10 @@
 using UnityEngine;
 
 public class WorldScroller : MonoBehaviour
-{
-    [SerializeField] private BirdController bird;
+{   
     [SerializeField] private float scrollSpeed = 5f;
     public bool isScrolling = true;
-
-    void Start()
-    {
-        
-    }
+    [SerializeField] private GameManager gameManager;
 
     void Update()
     {
@@ -18,15 +13,10 @@ public class WorldScroller : MonoBehaviour
 
     public void ScrollWorld()
     {
-        if (!isScrolling == true) return; 
-
-        if (bird == null || bird.IsDead || bird.IsInvincible)
+        if (gameManager == null || gameManager.CurrentState != GameManager.GameState.Playing)
         {
-            //  Bird is dead or invincible, stopping world scrolling;
             return;
         }
-
         transform.Translate(Vector3.left * scrollSpeed * Time.deltaTime);
-
     }
 }
