@@ -101,6 +101,12 @@ public class GameManager : MonoBehaviour
                 SetGameOverPanel(true);
                 SetPausePanel(false);
                 break;
+            case GameState.Paused:
+                SetWorldActive(false);
+                SetPausePanel(true);
+                break;
+
+                
         }
     }
 
