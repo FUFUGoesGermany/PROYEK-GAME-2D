@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering;
 public class BirdController : MonoBehaviour
 {
     [Header("Physics Parameters")]
@@ -187,6 +188,7 @@ public class BirdController : MonoBehaviour
     {
         isInvincible = true;
         invincibilityTimer = invincibilityDuration;
+        
     }
 
     private void UpdateInvincibility()
@@ -199,7 +201,7 @@ public class BirdController : MonoBehaviour
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null)
         {
-            sr.enabled = Mathf.PingPong(Time.time * 8f, 1f) > 0.3f;
+            sr.enabled = Mathf.PingPong(Time.unscaledTime * 8f, 1f) > 0.3f;
         }
 
         if (invincibilityTimer <= 0f)
@@ -222,10 +224,6 @@ public class BirdController : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Kinematic;
 
         Debug.Log("[BirdController] Bird died!");
-
-        // next nya:
-        // - Trigger death animation
-        // - Notify GameManager lalu show death screen
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

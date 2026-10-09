@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.AI;
+using UnityEditor.Rendering;
 
 
 public class GameManager : MonoBehaviour
@@ -17,17 +19,31 @@ public class GameManager : MonoBehaviour
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverPanel;
 
+    [Header("Pause UI")]
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private TextMeshProUGUI pauseTitleText;
+    private PauseReason pauseReason;
+
     public enum GameState
     {
         Countdown,
         Playing,
-        Dead
+        Dead,
+        Paused
+    }
+
+    public enum PauseReason
+    {
+        Manual,
+        TrackingLost
     }
 
     public GameState CurrentState { get; private set; }
 
     private void Awake()
     {
+        Time.timeScale = 1f;
+        
         if (bird == null)
         {
             bird = FindObjectOfType<BirdController>();
@@ -53,6 +69,12 @@ public class GameManager : MonoBehaviour
         {
             SetState(GameState.Dead);
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (CurrentState == GameState.Paused) ResumeGame();
+            else PauseGame(PauseReason.Manual);
+        }
     }
 
     private void SetState(GameState newState)
@@ -65,16 +87,19 @@ public class GameManager : MonoBehaviour
                 SetWorldActive(false);
                 SetCountdownText(string.Empty);
                 SetGameOverPanel(false);
+                SetPausePanel(false);
                 break;
             case GameState.Playing:
                 SetWorldActive(true);
                 SetCountdownText(string.Empty);
                 SetGameOverPanel(false);
+                SetPausePanel(false);
                 break;
             case GameState.Dead:
                 SetWorldActive(false);
                 SetCountdownText("GAME OVER");
                 SetGameOverPanel(true);
+                SetPausePanel(false);
                 break;
         }
     }
@@ -124,13 +149,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SetPausePanel(bool isActive)
+    {
+        if (pausePanel != null)
+        {
+            pausePanel.SetActive(isActive);
+        }
+
+        if (isActive && pauseTitleText != null)
+        {
+            pauseTitleText.text = (pauseReason == PauseReason.TrackingLost)
+            ? "Tracking Lost!"
+            : "Paused";
+        }
+    }
+
     public void RetryGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void GoToMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void PauseGame(PauseReason reason)
+    {
+        if (CurrentState == GameState.Dead || CurrentState == GameState.Paused) return;
+
+        pauseReason = reason;
+        Time.timeScale = 0f;
+        SetState(GameState.Paused);
+    }
+
+    public void ResumeGame()
+    {
+        if (CurrentState != GameState.Paused) return;
+
+        Time.timeScale = 1f;
+        SetState(GameState.Playing);
     }
 }
