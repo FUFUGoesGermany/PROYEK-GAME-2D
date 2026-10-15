@@ -3,27 +3,17 @@ using TMPro;
 using UnityEngine.Rendering;
 public class BirdController : MonoBehaviour
 {
-    [Header("Physics Parameters")]
-    [Tooltip("Kekuatan gravitasi (negatif = tarik ke bawah)")]
-    [SerializeField] private float gravity = -20f;
-
-    [Tooltip("Akselerasi ke atas saat hold W")]
-    [SerializeField] private float thrustUp = 35f;
-
-    [Tooltip("Akselerasi ke bawah saat hold S")]
-    [SerializeField] private float thrustDown = 25f;
-
-    [Tooltip("Batas kecepatan jatuh maksimum")]
-    [SerializeField] private float maxFallSpeed = -10f;
-
-    [Tooltip("Batas kecepatan naik maksimum")]
-    [SerializeField] private float maxRiseSpeed = 10f;
+    [Header("Flight Model v0.6")]
+    [SerializeField] private float flapImpulse = 4f;
+    [SerializeField] private float maxRiseSpeed = 6f;
+    [SerializeField] private float diveSpeed = 7f;
+    [SerializeField] private float diveAccel = 30f;
+    [SerializeField] private float hoverDamp = 10f;
+    private bool flapQueued;
     
-
     [Header("Health")]
     [SerializeField] private int maxHealth = 3;
     public int currentHealth;
-
 
     [Header("Boundaries")]
     [Tooltip("Batas atas layar (mentok, tidak mati)")]
@@ -97,8 +87,24 @@ public class BirdController : MonoBehaviour
             return;
         } 
 
-        ApplyGravity();
-        ApplyThrust();
+        Vector2 vel = rb.linearVelocity;
+
+        if (flapQueued)
+        { 
+            vel.y += flapImpulse;
+            flapQueued = false;  
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            vel.y = Mathf.MoveTowards(vel.y, -diveSpeed, diveAccel * Time.fixedDeltaTime);
+        }
+        else
+        {
+            vel.y = Mathf.MoveTowards(vel.y, 0f, hoverDamp  * Time.fixedDeltaTime);
+        }
+
+        rb.linearVelocity = vel;
         ClampVelocity();
         HandleBoundaries();
     }
@@ -107,6 +113,11 @@ public class BirdController : MonoBehaviour
     {
         UpdateInvincibility();
         HandleDebugRestart();
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            flapQueued = true;
+        }
     }
    
     // Debug Restart
@@ -121,37 +132,10 @@ public class BirdController : MonoBehaviour
         }
     }
     
-    //  PHYSICS
-    private void ApplyGravity()
-    {
-        Vector2 vel = rb.linearVelocity;
-        vel.y += gravity * Time.fixedDeltaTime;
-        rb.linearVelocity = vel;
-    }
-
-    private void ApplyThrust()
-    {
-        Vector2 vel = rb.linearVelocity;
-
-        // Hold W → thrust naik
-        if (Input.GetKey(KeyCode.W))
-        {
-            vel.y += thrustUp * Time.fixedDeltaTime;
-        }
-
-        // Hold S → thrust turun
-        if (Input.GetKey(KeyCode.S))
-        {
-            vel.y -= thrustDown * Time.fixedDeltaTime;
-        }
-
-        rb.linearVelocity = vel;
-    }
-
     private void ClampVelocity()
     {
         Vector2 vel = rb.linearVelocity;
-        vel.y = Mathf.Clamp(vel.y, maxFallSpeed, maxRiseSpeed);
+        vel.y = Mathf.Clamp(vel.y, -diveSpeed, maxRiseSpeed);
         rb.linearVelocity = vel;
     }
 
@@ -275,10 +259,7 @@ public class BirdController : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.linearVelocity = Vector2.zero;
         transform.position = spawnPosition;
-
         SetBirdKinematic(false);
-        rb.linearVelocity = Vector2.zero;
-        transform.position = spawnPosition;
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.enabled = true;
