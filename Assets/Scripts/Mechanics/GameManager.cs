@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
         Countdown,
         Playing,
         Dead,
-        Paused
+        Paused,
+        LevelComplete
     }
 
     public enum PauseReason
@@ -105,8 +106,6 @@ public class GameManager : MonoBehaviour
                 SetWorldActive(false);
                 SetPausePanel(true);
                 break;
-
-                
         }
     }
 
@@ -197,5 +196,11 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 1f;
         SetState(GameState.Playing);
+    }
+
+    public void ReachFinish()
+    {
+        if (CurrentState != GameState.Playing ) return;
+        SetState(GameState.LevelComplete);
     }
 }
